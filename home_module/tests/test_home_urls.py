@@ -10,4 +10,4 @@ class TestView(TestCase):
 
     def test_home_about_url_resolve(self):
         url = reverse("about_page")
-        self.assertEqual(resolve(url).func.view_class, AboutView)
+        self.assertEqual(resolve(url).func.view_class, AboutView
