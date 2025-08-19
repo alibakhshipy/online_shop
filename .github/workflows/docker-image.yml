@@ -33,5 +33,6 @@ jobs:
 
       # 6) اجرای pytest
       - name: Run tests with pytest
-        run: docker run --rm myapp-test pytest
+        run: docker run --rm myapp-test pytest /app
+
 
