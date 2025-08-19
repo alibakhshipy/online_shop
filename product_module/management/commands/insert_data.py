@@ -3,6 +3,12 @@ from faker import Faker
 from account_module.models import User, Profile
 from product_module.models import Product, ProductCategory
 
+
+category_list = [
+    'لوازم آرایشی',
+    'لوازم آشپزخانه',
+    'ارز کالامارک'
+]
 class Command(BaseCommand):
     help = 'inserting dummy data'
 
@@ -41,3 +47,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"User {user.username} created"))
         else:
             self.stdout.write(self.style.WARNING(f"User with email {email} already exists"))
+
+        #Create category
+        for name in category_list:
+            ProductCategory.objects.get_or_create(title=name, is_active=True, is_delete=False)
