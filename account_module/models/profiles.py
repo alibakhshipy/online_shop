@@ -1,6 +1,7 @@
 from django.db import models
 from account_module.models.user import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Model Api TEST
 class Profile(models.Model):
@@ -15,3 +16,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    
