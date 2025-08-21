@@ -3,8 +3,15 @@
     {% for category in categories %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4 class="panel-title"><a
-                        href="{% url 'product:product-category-list' cat=category.url_title %}">{{ category.title }}</a></h4>
+                <h4 class="panel-title">
+                    {% if category.url_title %}
+                        <a href="{% url 'product:product-category-list' cat=category.url_title %}">
+                            {{ category.title }}
+                        </a>
+                    {% else %}
+                        <span>{{ category.title }}</span>
+                    {% endif %}
+                </h4>
             </div>
         </div>
     {% endfor %}

@@ -2,7 +2,7 @@ from django.db.models import Count
 from django.http import HttpRequest
 from django.shortcuts import render, redirect
 from django.views.generic.base import View
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 from utils.conventors import group_list
 from site_module.models import SiteBanner
 from utils.http_service import get_client_ip
@@ -118,3 +118,7 @@ def product_brand_component(request: HttpRequest):
     return render(
         request, "product_module/components/product_brand_component.html", context
     )      
+
+# products api frontend
+class ProductApiView(TemplateView):
+    template_name = 'product_module/products_api.html'
