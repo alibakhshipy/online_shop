@@ -1,4 +1,4 @@
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import ProductSerializers, CategorySerializer
 from ...models import Product, ProductCategory
 from rest_framework import viewsets
@@ -37,6 +37,6 @@ class ProductModelViewSet(viewsets.ModelViewSet):
 
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = CategorySerializer
     queryset = ProductCategory.objects.filter(is_active=True)
