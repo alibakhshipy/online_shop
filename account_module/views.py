@@ -3,8 +3,9 @@ from django.urls import reverse
 from django.views import View
 from .models import User 
 from django.utils.crypto import get_random_string
-from django.http import Http404, HttpRequest
+from django.http import HttpResponse,Http404, HttpRequest
 from django.contrib.auth import login, logout
+from django.conf import settings
 from account_module.formes import (
     RegisterForm,
     LoginForm,
@@ -12,7 +13,8 @@ from account_module.formes import (
     ResetPasswordForm,
 )
 from utils.email_service import send_email
-
+import time
+from .tasks import sendEmail
 
 class RegisterView(View):
     def get(self, request):
@@ -34,17 +36,27 @@ class RegisterView(View):
                     email=user_email,
                     email_active_code=get_random_string(72),
                     is_active=False,
+                    is_verified =False,
                     username=user_email,
                 )
                 new_user.set_password(user_password)
                 new_user.save()
+                
+                #link activate
+                activation_link = f"http://127.0.0.1:8000/activate-account/{new_user.email_active_code}/"
                 # todo: send email active code
                 send_email(
-                    "فعال سازی حساب کاربری",
-                    new_user.email,
-                    {"user": new_user},
-                    "emails/activate_account.html",
+                    subject="فعال سازی حساب کاربری",
+                    message=f"برای فعالسازی روی لینک زیر کلیل کنید:\n{activation_link}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[new_user.email],
                 )
+                # send_email(
+                #     "فعال سازی حساب کاربری",
+                #     new_user.email,
+                #     {"user": new_user},
+                #     "emails/activate_account.html",
+                # )
                 return redirect(reverse("login_page"))
 
         context = {"register_form": register_form}
@@ -52,23 +64,34 @@ class RegisterView(View):
         return render(request, "account_module/register.html", context)
 
 
+from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
+from django.utils.crypto import get_random_string
+from django.urls import reverse
+from django.views import View
+from .models import User
+
+
 class ActivateAccountView(View):
     def get(self, request, email_active_code):
         user: User = User.objects.filter(
             email_active_code__iexact=email_active_code
         ).first()
+
         if user is not None:
             if not user.is_active:
                 user.is_active = True
-                user.email_active_code = get_random_string(72)
+                user.is_verified = True
+                user.email_active_code = ""   # مصرف شد، دوباره استفاده نشه
                 user.save()
-                # todo: show success message to user
+                # پیام موفقیت → بفرستش صفحه لاگین
                 return redirect(reverse("login_page"))
             else:
-                # todo: show your account was activated message to user
-                pass
+                # اگه از قبل فعال بوده
+                return HttpResponse("حساب شما قبلاً فعال شده است ✅")
 
-        raise Http404
+        # اگه کد اشتباه یا منقضی بود
+        raise Http404("کد فعال‌سازی معتبر نیست ❌")
 
 
 class LoginView(View):
@@ -153,3 +176,9 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect(reverse("login_page"))
+
+
+# send email celery
+def send_email(request):
+    sendEmail.delay()
+    return HttpResponse("<h1>Done sending</h1>")
