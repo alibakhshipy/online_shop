@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "mail_templated",
     "djoser",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -167,20 +168,21 @@ REST_FRAMEWORK = {
 }
 
 # ُsend email
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = False
-EMAIL_HOST = "smtp4dev"
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
-EMAIL_PORT = 25
-
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_USE_TLS = False
+# EMAIL_HOST = "smtp4dev"
+# EMAIL_HOST_USER = ""
+# EMAIL_HOST_PASSWORD = ""
+# EMAIL_PORT = 25
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@example.com"
 
 # celery config
 CELERY_BROKER_URL = 'redis://redis:6379/1'
 
-CELERY_BROKER_URL = {
+CELERY_BEAT_SCHEDULE = {
     'send_email': {
-        'task': 'accounts.tasks.sendEmail',
+        'task': 'account_module.tasks.sendEmail',
         'schedule':5
     }
 }

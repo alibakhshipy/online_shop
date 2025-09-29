@@ -24,6 +24,8 @@ services:
   worker:
     build: .
     command: celery -A djangoProject worker --loglevel=info
+    volumes:
+      - .:/app
     depends_on:
       - redis
       - web
