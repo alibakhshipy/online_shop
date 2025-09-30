@@ -1,5 +1,7 @@
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 from django.db.models import Count
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic.base import View
 from django.views.generic import ListView, DetailView, TemplateView
@@ -7,6 +9,7 @@ from utils.conventors import group_list
 from site_module.models import SiteBanner
 from utils.http_service import get_client_ip
 from .models import Product, ProductCategory, ProductBrand, ProductVisit, ProductGallery
+import time
 
 
 class ProductListView(ListView):
@@ -122,3 +125,10 @@ def product_brand_component(request: HttpRequest):
 # products api frontend
 class ProductApiView(TemplateView):
     template_name = 'product_module/products_api.html'
+
+
+# caching products
+@cache_page(60)
+def cache_products(request):
+        products = Product.objects.all()
+        return render(request, 'product_module/product_list.html', {'products': products})
