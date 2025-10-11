@@ -187,44 +187,12 @@ CELERY_BEAT_SCHEDULE = {
     }
 }
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://redis:6379/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
-# settings.py
-
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
-
-# زمان کش پیش‌فرض برای کل پروژه (ثانیه)
-CACHE_MIDDLEWARE_SECONDS = 60 * 5
-CACHE_MIDDLEWARE_KEY_PREFIX = ""
-
-MIDDLEWARE = [
-    # کش باید اولین و آخرین باشه
-    "django.middleware.cache.UpdateCacheMiddleware",
-
-    # لازمه برای session و auth
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-
-    # هر middleware کاستوم خودت (مثلاً لاگین‌کرده‌ها کش نشن)
-    "myapp.middlewares.NoCacheForAuthMiddleware",
-
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # کش باید آخر بیاد
-    "django.middleware.cache.FetchFromCacheMiddleware",
-]

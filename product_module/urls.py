@@ -14,5 +14,5 @@ urlpatterns = [
     path("<slug:slug>/", views.ProductDetailView.as_view(), name="product-details"),
     path("api/v1/", include("product_module.api.v1.urls")),
     # cache products
-    path('cache-products', views.cache_products, name='cache-products'),
+    # path('cache-products', views.cache_products, name='cache-products'),
 ]

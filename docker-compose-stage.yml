@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning  
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1  # برای مشاهده لاگ‌ها در زمان واقعی
+      - DEBUG=False
+    depends_on:
+      - redis
+    command: >
+      bash -c "python manage.py makemigrations &&
+           python manage.py migrate &&
+           python manage.py collectstatic --noinput &&
+           gunicorn djangoProject.wsgi:application --bind 0.0.0.0:8000"
+
+  worker:
+    build: .
+    command: celery -A djangoProject worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - web
+
+  locust_master:
+    image: locustio/locust
+    container_name: locust_master
+    ports:
+     - "8089:8089"
+    volumes:
+      - ./locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://web:8000/
+  
+  locust_worker:
+    image: locustio/locust
+    container_name: locust_worker
+    depends_on:
+      - locust_master
+    volumes:
+      - ./locust:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust_master

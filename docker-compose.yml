@@ -1,71 +1,71 @@
-version: '3.8'
+# version: '3.8'
 
-services:
+# services:
 
-  redis:
-    container_name: redis
-    image: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    command: redis-server --save 60 1 --loglevel warning  
+#   redis:
+#     container_name: redis
+#     image: redis
+#     restart: always
+#     ports:
+#       - "6379:6379"
+#     command: redis-server --save 60 1 --loglevel warning  
 
-  web:
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-    environment:
-      - PYTHONUNBUFFERED=1  # برای مشاهده لاگ‌ها در زمان واقعی
-    depends_on:
-      - redis
+#   web:
+#     build: .
+#     ports:
+#       - "8000:8000"
+#     volumes:
+#       - .:/app
+#     environment:
+#       - PYTHONUNBUFFERED=1  # برای مشاهده لاگ‌ها در زمان واقعی
+#     depends_on:
+#       - redis
 
-  worker:
-    build: .
-    command: celery -A djangoProject worker --loglevel=info
-    volumes:
-      - .:/app
-    depends_on:
-      - redis
-      - web
+#   worker:
+#     build: .
+#     command: celery -A djangoProject worker --loglevel=info
+#     volumes:
+#       - .:/app
+#     depends_on:
+#       - redis
+#       - web
 
-  smtp4dev:
-    image: rnwood/smtp4dev:v3
-    restart: always
-    ports:
-      # Change the number before : to the port the web interface should be accessible on
-      - '5000:80'
-      # Change the number before : to the port the SMTP server should be accessible on
-      - '25:25'
-      # Change the number before : to the port the IMAP server should be accessible on
-      - '143:143'
-    volumes:
-      # This is where smtp4dev stores the database..
-        - smtp4dev-data:/smtp4dev
-    environment:
+#   smtp4dev:
+#     image: rnwood/smtp4dev:v3
+#     restart: always
+#     ports:
+#       # Change the number before : to the port the web interface should be accessible on
+#       - '5000:80'
+#       # Change the number before : to the port the SMTP server should be accessible on
+#       - '25:25'
+#       # Change the number before : to the port the IMAP server should be accessible on
+#       - '143:143'
+#     volumes:
+#       # This is where smtp4dev stores the database..
+#         - smtp4dev-data:/smtp4dev
+#     environment:
 
-      #Specifies the URLs the web UI will use inside the container.
-      - ServerOptions__Urls=http://*:80
+#       #Specifies the URLs the web UI will use inside the container.
+#       - ServerOptions__Urls=http://*:80
 
-      #Specifies the server hostname. Used in auto-generated TLS certificate if enabled.
-      - ServerOptions__HostName=smtp4dev
-  locust_master:
-    image: locustio/locust
-    container_name: locust_master
-    ports:
-     - "8089:8089"
-    volumes:
-      - ./locust:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --master -H http://web:8000/
+#       #Specifies the server hostname. Used in auto-generated TLS certificate if enabled.
+#       - ServerOptions__HostName=smtp4dev
+#   locust_master:
+#     image: locustio/locust
+#     container_name: locust_master
+#     ports:
+#      - "8089:8089"
+#     volumes:
+#       - ./locust:/mnt/locust
+#     command: -f /mnt/locust/locustfile.py --master -H http://web:8000/
   
-  locust_worker:
-    image: locustio/locust
-    container_name: locust_worker
-    depends_on:
-      - locust_master
-    volumes:
-      - ./locust:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --worker --master-host locust_master
-volumes:
-  smtp4dev-data:
+#   locust_worker:
+#     image: locustio/locust
+#     container_name: locust_worker
+#     depends_on:
+#       - locust_master
+#     volumes:
+#       - ./locust:/mnt/locust
+#     command: -f /mnt/locust/locustfile.py --worker --master-host locust_master
+# volumes:
+#   smtp4dev-data:

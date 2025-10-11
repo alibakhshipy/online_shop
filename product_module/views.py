@@ -10,8 +10,9 @@ from site_module.models import SiteBanner
 from utils.http_service import get_client_ip
 from .models import Product, ProductCategory, ProductBrand, ProductVisit, ProductGallery
 import time
+from djangoProject.auto_cache import auto_cache_view
 
-
+@auto_cache_view(view=None, timeout=60*5)
 class ProductListView(ListView):
     template_name = "product_module/product_list.html"
     model = Product
@@ -55,7 +56,7 @@ class ProductListView(ListView):
             query = query.filter(category__url_title__iexact=category_name)
         return query
 
-
+@auto_cache_view(view=None, timeout=60*5)
 class ProductDetailView(DetailView):
     template_name = "product_module/product_detail.html"
     model = Product
@@ -112,7 +113,7 @@ def product_categories_component(request: HttpRequest):
         request, "product_module/components/product_categories_components.html", context
     )
 
-
+@cache_page(60 * 5)
 def product_brand_component(request: HttpRequest):
     product_brands = ProductBrand.objects.annotate(
         products_count=Count("product")
@@ -128,7 +129,8 @@ class ProductApiView(TemplateView):
 
 
 # caching products
-@cache_page(60)
+@cache_page(60*5)
 def cache_products(request):
         products = Product.objects.all()
         return render(request, 'product_module/product_list.html', {'products': products})
+
