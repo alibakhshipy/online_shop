@@ -97,7 +97,9 @@ WSGI_APPLICATION = "djangoProject.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 AUTH_USER_MODEL = "account_module.User"
-LOGIN_URL = "/login"
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 DATABASES = {
     "default": {
@@ -141,9 +143,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
-MEDIA_ROOT = BASE_DIR / "uploads"
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "uploads"
+
 STATICFILES_DIRS = [BASE_DIR / "static"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -152,7 +157,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DEFAULT_CHARSET = "utf-8"
 
 # Docker
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],

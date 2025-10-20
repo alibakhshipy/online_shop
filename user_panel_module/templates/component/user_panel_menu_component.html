@@ -1,4 +1,4 @@
-<ul class="list-group">
+<!-- <ul class="list-group">
     <li class="list-group-item">
         <a href="{% url 'user_panel_dashboard' %}">حساب کاربری</a>
     </li>
@@ -8,4 +8,24 @@
     <li class="list-group-item">
         <a href="{% url 'change_password' %}">تغییر کلمه عبور</a>
     </li>
-</ul>
+</ul> -->
+
+<!-- templates/user_dashboard.html -->
+
+<div class="dashboard-container">
+    <h2>پنل کاربری</h2>
+    <div class="dashboard-grid">
+        <a href="{% url 'user_panel_dashboard' %}" class="dashboard-card">
+            <div class="icon">👤</div>
+            <span>حساب کاربری</span>
+        </a>
+        <a href="{% url 'edit_user_panel' %}" class="dashboard-card">
+            <div class="icon">✏️</div>
+            <span>ویرایش اطلاعات</span>
+        </a>
+        <a href="{% url 'change_password' %}" class="dashboard-card">
+            <div class="icon">🔒</div>
+            <span>تغییر کلمه عبور</span>
+        </a>
+    </div>
+</div>
