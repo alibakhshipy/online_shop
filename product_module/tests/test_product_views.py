@@ -4,14 +4,18 @@ from ..models import Product, ProductBrand, ProductCategory
 from django.test import TestCase, override_settings
 
 
+from django.test import TestCase, override_settings
+
 @override_settings(
     CACHES={
         "default": {
             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
         }
-    }
+    },
+    MIDDLEWARE=[
+        
+    ]
 )
-
 class TestProductListView(TestCase):
 
     def setUp(self):
