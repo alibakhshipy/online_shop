@@ -1,4 +1,4 @@
-name: Django CI with Docker & Pytest
+name: Django CI
 
 on:
   push:
@@ -10,44 +10,28 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    services:
-      redis:
-        image: redis:alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build docker image
-        run: docker build -t myapp-test .
-
-      - name: Wait for Redis
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
         run: |
-          timeout 30s bash -c 'until docker run --rm --network host redis:alpine redis-cli -h localhost ping; do sleep 2; done'
-
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Set up Django settings
+        run: |
+          export DJANGO_SETTINGS_MODULE=djangoProject.settings
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          
       - name: Run migrations
-        run: docker run --rm --network host -e TESTING=True -e PYTHONPATH=/app myapp-test python manage.py migrate
-
-      - name: Collect static files
-        run: docker run --rm --network host -e TESTING=True -e PYTHONPATH=/app myapp-test python manage.py collectstatic --noinput
-
-      - name: Run tests with pytest
         run: |
-          docker run --rm myapp-test pytest /app \
-            -k "not test_create_product_response_401_status \
-            and not test_create_product_response_201_status \
-            and not test_view_statues_code \
-            and not test_start_price_filtering \
-            and not test_end_price_filtering \
-            and not test_brand_filtering" \
-            -v
+          python manage.py migrate
+          
+      - name: Run tests
+        run: |
+          python manage.py test
