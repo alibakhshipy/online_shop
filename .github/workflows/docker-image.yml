@@ -9,30 +9,34 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    # 1. اضافه کردن سرویس Redis
+    services:
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      # 1) کد رو میاره توی runner
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) نصب docker و buildx
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      # 3) Build ایمیج پروژه
       - name: Build docker image
         run: docker build -t myapp-test .
 
-      # 4) اجرای migrate
       - name: Run migrations
-        run: docker run --rm myapp-test python manage.py migrate
+        run: docker run --rm --network host myapp-test python manage.py migrate
 
-      # 5) جمع کردن static ها
       - name: Collect static files
-        run: docker run --rm myapp-test python manage.py collectstatic --noinput
+        run: docker run --rm --network host myapp-test python manage.py collectstatic --noinput
 
-      # 6) اجرای pytest
       - name: Run tests with pytest
-        run: docker run --rm myapp-test pytest /app
-
-
+        run: docker run --rm --network host myapp-test pytest /app
