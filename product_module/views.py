@@ -121,8 +121,16 @@ def product_brand_component(request: HttpRequest):
     context = {"brands": product_brands}
     return render(
         request, "product_module/components/product_brand_component.html", context
-    )      
+    )
 
+@cache_page(60 * 5)
+def product_baner_component(request: HttpRequest):
+    product_baner = SiteBanner.objects.all()
+    context = {"baner": product_baner}
+    return render(
+        request, "product_module/components/product_baner_component.html", context
+    )
+    
 # products api frontend
 class ProductApiView(TemplateView):
     template_name = 'product_module/products_api.html'

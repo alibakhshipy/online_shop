@@ -45,6 +45,7 @@ class ProductBrand(models.Model):
         return self.title
 
 
+
 class Product(models.Model):
     title = models.CharField(max_length=300, verbose_name="نام محصول")
     category = models.ManyToManyField(

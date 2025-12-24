@@ -1,7 +1,5 @@
 from django.db import models
-
 from account_module.models import User
-
 
 class ArticleCategory(models.Model):
     parent = models.ForeignKey(
@@ -9,6 +7,7 @@ class ArticleCategory(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        related_name='sub_categories',
         verbose_name="والد محصولات",
     )
     title = models.CharField(max_length=100, verbose_name="عنوان دسته بندی")

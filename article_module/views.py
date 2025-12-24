@@ -33,17 +33,25 @@ class ArticleDetailView(DetailView):
         return query
 
     def get_context_data(self, **kwargs):
-        context = super(ArticleDetailView, self).get_context_data(**kwargs)
-        article: Article = kwargs.get("object")
+        context = super().get_context_data(**kwargs)
+        article: Article = self.object
+
         context["comments"] = (
-            ArticleComment.objects.prefetch_related("articlecategory_set")
-            .filter(article_id=article.id, parent=None)
-            .prefetch_related("articlecomment_set")
+            ArticleComment.objects
+            .filter(article=article, parent=None)
+            .select_related("article", "user")
+            .prefetch_related(
+                "article__selected_categories",
+                "articlecomment_set"
+            )
         )
+
         context["comments_count"] = ArticleComment.objects.filter(
-            article_id=article.id
+            article=article
         ).count()
+
         return context
+
 
 
 def article_categories_component(request: HttpRequest):
