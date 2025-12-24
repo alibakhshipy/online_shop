@@ -201,3 +201,10 @@ CACHES = {
         }
     }
 }
+
+if DEBUG or os.environ.get("TESTING"):
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
