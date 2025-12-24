@@ -10,7 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    # 1. اضافه کردن سرویس Redis
     services:
       redis:
         image: redis:alpine
@@ -32,11 +31,16 @@ jobs:
       - name: Build docker image
         run: docker build -t myapp-test .
 
+      - name: Wait for Redis
+        run: |
+          docker run --rm --network host redis:alpine redis-cli -h localhost ping || exit 1
+          sleep 5
+
       - name: Run migrations
-        run: docker run --rm --network host myapp-test python manage.py migrate
+        run: docker run --rm --network host -e TESTING=1 myapp-test python manage.py migrate
 
       - name: Collect static files
-        run: docker run --rm --network host myapp-test python manage.py collectstatic --noinput
+        run: docker run --rm --network host -e TESTING=1 myapp-test python manage.py collectstatic --noinput
 
       - name: Run tests with pytest
-        run: docker run --rm --network host myapp-test pytest /app
+        run: docker run --rm --network host -e TESTING=1 myapp-test pytest /app -v
