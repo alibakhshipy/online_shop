@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from django.urls import reverse
 from account_module.models import User
-from product_module.models import ProductCategory, Product
+from product_module.models import ProductBrand, ProductCategory, Product
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ class TestProductApi:
         category = ProductCategory.objects.create(
             title="test", is_active=True, is_delete=False
         )
-        brand = ProductBrand.objects.create(  # ← اضافه کردن برند
+        brand = ProductBrand.objects.create(  # ← اضافه کردن
             title="test-brand", url_title="test-brand", is_active=True
         )
         
@@ -56,7 +56,7 @@ def test_create_product_response_201_status(self, api_client, common_user):
     category = ProductCategory.objects.create(
         title="test-cat", is_active=True, is_delete=False
     )
-    brand = ProductBrand.objects.create(  # ← اضافه کردن برند
+    brand = ProductBrand.objects.create(  # ← اضافه کردن
         title="test-brand", url_title="test-brand", is_active=True
     )
     
