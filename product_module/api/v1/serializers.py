@@ -1,31 +1,30 @@
 from rest_framework import serializers
-from ...models import Product, ProductCategory
-
-# class Product_serializers(serializers.Serializer):
-#     id = serializers.IntegerField()
-#     title = serializers.CharField(max_length=250)
-
+from ...models import Product, ProductCategory, ProductBrand
 
 class ProductSerializers(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField()
     relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
     absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
-    # category = serializers.SlugRelatedField(many=True, slug_field='title', queryset = ProductCategory.objects.all())
-
+    
     class Meta:
         model = Product
         fields = [
+            "id",  # ← اضافه کردن
             "title",
+            "slug",
+            "brand",  # ← اضافه کردن (مهم!)
+            "stock_quantity",  # ← اضافه کردن
+            "short_description",  # ← اضافه کردن
+            "description",  # ← اضافه کردن
+            "price",
             "snippet",
             "category",
-            "slug",
-            "price",
             "is_active",
             "is_delete",
             "relative_url",
             "absolute_url",
         ]
-        read_only_fields = ["description", "short_description"]
+        read_only_fields = []  # همه فیلدها قابل نوشتن باشند
 
     def get_abs_url(self, obj):
         request = self.context.get("request")
