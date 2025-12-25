@@ -1,10 +1,11 @@
 services:
   - type: web
-    name: django-shop-demo
+    name: online-shop
     env: python
     plan: free
     buildCommand: |
       pip install -r requirements.txt
-      python manage.py collectstatic --noinput
+      python manage.py makemigrations
       python manage.py migrate
+      python manage.py collectstatic --noinput
     startCommand: gunicorn djangoProject.wsgi:application
